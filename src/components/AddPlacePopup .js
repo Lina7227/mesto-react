@@ -28,17 +28,14 @@ function AddPlacePopup(props) {
         });
     }
 
+
     return (
 
         <PopupWithForm
-          name="edit_element"
-          content="edit"
-          close="element"
-          namef="image"
-          form="img"
+          name="edit"
           title="Новое место"
           button="add"
-          buttonSbmText={props.buttonSbmText}
+          buttonSubmitText={props.buttonSubmitText}
           isOpen={props.isOpen}
           onClose={props.onClose}
           onSubmit={handleSubmit}

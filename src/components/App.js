@@ -2,7 +2,6 @@ import React from 'react';
 import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
-import PopupWithForm from './PopupWithForm';
 import ImagePopup from './ImagePopup';
 import api from '../utils/Api';
 import CurrentUserContext from '../contexts/CurrentUserContext';
@@ -13,7 +12,6 @@ import DeleteCardPopup from './DeleteCardPopup';
 
 function App() {
 
-  
   const [isEditAvatarPopupOpen, onEditAvatarPopupOpen] = React.useState(false);
   const [isEditProfilePopupOpen, onEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, onAddPlacePopupOpen] = React.useState(false);
@@ -22,27 +20,20 @@ function App() {
   const [currentUser, setCurrentUser] = React.useState({});
   const [cards, setCards] = React.useState([]);
   const [cardDelete, setCardDelete] = React.useState({});
-  const [sbmPopupProfile, setsbmPopupProfile] = React.useState('Сохранить');
-  const [sbmPopupAvatar, setsbmPopupAvatar] = React.useState('Сохранить');
-  const [sbmPopupImg, setsbmPopupImg] = React.useState('Создать');
-  const [sbmPopupRemove, setsbmPopupRemove] = React.useState('Да');
-
-  
-
+  const [profilePopupButtonText, setProfilePopupButtonText] = React.useState('Сохранить');
+  const [avatarPopupButtonText, setAvatarPopupButtonText] = React.useState('Сохранить');
+  const [placePopupButtonText, setPlacePopupButtonText] = React.useState('Создать');
+  const [removePopupButtonText, setRemovePopupButtonText] = React.useState('Да');
 
   function handleEditAvatarClick() {
-    setsbmPopupAvatar('Сохранить');
     onEditAvatarPopupOpen(true);
-    
   }
 
   function handleEditProfileClick() {
-    setsbmPopupRemove('Сохранить');
     onEditProfilePopupOpen(true);
   }
 
   function handleAddPlaceClick() {
-    setsbmPopupImg('Создать');
     onAddPlacePopupOpen(true);
   }
 
@@ -51,14 +42,11 @@ function App() {
   }
 
   function handleCardDeleteClick(card) {
-    setsbmPopupRemove('Да');
     onDeleteCardPopup(true);
-    setCardDelete(card);
-    
+    setCardDelete(card); 
   }
 
   function closeAllPopups() {
-
     onEditAvatarPopupOpen(false);
     onEditProfilePopupOpen(false);
     onAddPlacePopupOpen(false);
@@ -95,9 +83,8 @@ function App() {
 
   },[]);
   
-
   React.useEffect(() => {
-    Promise.all([api.getInfoUserData(), api.getInitialCards()])
+    Promise.all([api.getUser(), api.getInitialCards()])
       .then(([userData, cards]) => {
         setCurrentUser(userData);
         setCards(cards)
@@ -108,37 +95,38 @@ function App() {
 
   }, [])
 
-  
-
   function handleCardLike(card) {
       
-      const isLiked = card.likes.some(like => like._id === currentUser._id);
+    const isLiked = card.likes.some(like => like._id === currentUser._id);
       
-      api.changeLikeCardStatus(card._id, !isLiked)
-          .then((newCard) => {
-              setCards((state) => state.map((c) => c._id === card._id ? newCard : c));
-          })
-          .catch((err) => {
-              console.log(err);
-          })
+    api.changeCardLikeStatus(card._id, !isLiked)
+      .then((newCard) => {
+          setCards((state) => state.map((c) => c._id === card._id ? newCard : c));
+      })
+      .catch((err) => {
+          console.log(err);
+      })
   }
     
   function handleCardDelete(card) {
-    setsbmPopupRemove('Удаление...')
-      api.removeCard(card._id)
-        .then(() => {
-          const newCards = cards.filter((evt) => evt._id !== card._id);
-          setCards(newCards);
-          closeAllPopups();
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+    setRemovePopupButtonText('Удаление...')
+    api.removeCard(card._id)
+      .then(() => {
+        const newCards = cards.filter((evt) => evt._id !== card._id);
+        setCards(newCards);
+        closeAllPopups();
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setRemovePopupButtonText('Да');
+      })
   }
 
   function handleUpdateUser(user) {
-    setsbmPopupProfile('Сохранение...');
-    api.setInfoUserData(user)
+    setProfilePopupButtonText('Сохранение...');
+    api.setUser(user)
       .then((user) => {
         setCurrentUser(user);
         closeAllPopups();
@@ -146,11 +134,14 @@ function App() {
       .catch((err) => {
         console.log(err);
       })
+      .finally(() => {
+        setProfilePopupButtonText('Сохранить');
+      })
   }
 
   function handleUpdateAvatar(avatar) {
-    setsbmPopupAvatar('Сохранение...');
-    api.setAvatarUser(avatar)
+    setAvatarPopupButtonText('Сохранение...');
+    api.setUserAvatar(avatar)
       .then((avatar) => {
         setCurrentUser(avatar);
         closeAllPopups();
@@ -158,11 +149,14 @@ function App() {
       .catch((err) => {
         console.log(err);
       })
+      .finally(() => {
+        setAvatarPopupButtonText('Сохранить');
+      })
   }
 
   function handleAddPlaceSubmit(cardNew) {
-    setsbmPopupImg('Добавление...');
-    api.addCards(cardNew)
+    setPlacePopupButtonText('Добавление...');
+    api.addCard(cardNew)
       .then((cardNew) => {
         setCards([cardNew, ...cards]);
         closeAllPopups();
@@ -170,6 +164,9 @@ function App() {
       })
       .catch((err) => {
         console.log(err);
+      })
+      .finally(() => {
+        setPlacePopupButtonText('Создать');
       })
   }
   
@@ -193,21 +190,21 @@ function App() {
           isOpen={isEditProfilePopupOpen} 
           onClose={closeAllPopups}
           onUpdateUser={handleUpdateUser}
-          buttonSbmText={sbmPopupProfile}
+          buttonSubmitText={profilePopupButtonText}
         /> 
 
         <AddPlacePopup
           isOpen={isAddPlacePopupOpen}
           onClose={closeAllPopups}
           onAddPlace={handleAddPlaceSubmit}
-          buttonSbmText={sbmPopupImg}
+          buttonSubmitText={placePopupButtonText}
         />
 
         <EditAvatarPopup
           isOpen={isEditAvatarPopupOpen}
           onClose={closeAllPopups}
           onUpdateAvatar={handleUpdateAvatar}
-          buttonSbmText={sbmPopupAvatar}
+          buttonSubmitText={avatarPopupButtonText}
         />
 
         <DeleteCardPopup
@@ -215,7 +212,7 @@ function App() {
           onClose={closeAllPopups}
           onSubmitDeleteCard={handleCardDelete}
           card={cardDelete}
-          buttonSbmText={sbmPopupRemove}
+          buttonSubmitText={removePopupButtonText}
         />
 
         <ImagePopup

@@ -30,17 +30,14 @@ function EditProfilePopup(props) {
         });
     }
     
+
     return (
 
         <PopupWithForm
-          name="edit_profile"
-          content="edit"
-          close="profile"
-          namef="user"
-          form="profile"
+          name="edit"
           title="Редактировать профиль"
           button="add"
-          buttonSbmText={props.buttonSbmText}
+          buttonSubmitText={props.buttonSubmitText}
           isOpen={props.isOpen}
           onClose={props.onClose}
           onSubmit={handleSubmit}

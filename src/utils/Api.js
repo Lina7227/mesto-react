@@ -5,7 +5,7 @@ class Api{
     }
 
     // возврат ответа сервера об ошибке
-    onError = (res) => {
+    handleResponse = (res) => {
         if(res.ok){
             return res.json();
         }
@@ -13,17 +13,17 @@ class Api{
     } 
 
     // запрос о получении информации о пользователе
-    getInfoUserData() {
+    getUser() {
         return fetch(`${this._baseUrl}/users/me`, {
             headers: {
                 authorization: this._token
             }
         })
-        .then(this.onError)
+        .then(this.handleResponse)
  
     }
     // сохранение данных пользователя
-    setInfoUserData(data) {
+    setUser(data) {
         return fetch(`${this._baseUrl}/users/me`, {
             method: 'PATCH',
             headers: {
@@ -35,12 +35,12 @@ class Api{
                 about: `${data.about}`,
             })
         })
-        .then(this.onError)
+        .then(this.handleResponse)
 
     }
     
     // отправка нового аватара
-    setAvatarUser(data) {
+    setUserAvatar(data) {
         return fetch(`${this._baseUrl}/users/me/avatar`, {
             method: 'PATCH',
             headers: {
@@ -51,7 +51,7 @@ class Api{
                 avatar: data.avatar,
             })
         })
-        .then(this.onError)
+        .then(this.handleResponse)
     }
 
     // запрос на получение карточек
@@ -63,12 +63,12 @@ class Api{
                 'Content-Type': 'application/json'
             }
         })
-        .then(this.onError)
+        .then(this.handleResponse)
             
     }
 
     // сохранение карточек
-    addCards(data){
+    addCard(data){
         return fetch(`${this._baseUrl}/cards`, {
           method:'POST',
           headers: {
@@ -80,7 +80,7 @@ class Api{
             link: `${data.link}`,
           })
         })
-        .then(this.onError)
+        .then(this.handleResponse)
 
     }
 
@@ -93,12 +93,12 @@ class Api{
                 'Content-Type': 'application/json'
             }
         })
-        .then(this.onError)
+        .then(this.handleResponse)
             
     }
 
     // запрос поставить и удалить лайк с карточки
-    changeLikeCardStatus(cardId, likeStatus) {
+    changeCardLikeStatus(cardId, likeStatus) {
         return fetch(`${this._baseUrl}/cards/likes/${cardId}`, {
             method: (likeStatus ? 'PUT' : 'DELETE'),
             headers: {
@@ -106,7 +106,7 @@ class Api{
                 'Content-Type': 'application/json'
             }
         })
-        .then(this.onError)
+        .then(this.handleResponse)
             
     }
 

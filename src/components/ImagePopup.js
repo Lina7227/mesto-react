@@ -3,10 +3,7 @@ import React from 'react';
 function ImagePopup({card, onClose}) {
     
     return (
-        <div className={`popup popup_images ${
-
-            card.link ? "popup_opened" : ""
-          }`}>
+        <div className={`popup popup_images ${card.link ? "popup_opened" : "" }`}>
 
             <div className="popup__content popup__content_image">
                 <button type="button" aria-label="закрыть попап" className="popup__close popup__close_image" onClick={onClose}></button>
