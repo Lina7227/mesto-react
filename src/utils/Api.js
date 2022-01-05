@@ -24,7 +24,7 @@ class Api{
     }
     // сохранение данных пользователя
     setInfoUserData(data) {
-        return fetch(`${this._url}/users/me`, {
+        return fetch(`${this._baseUrl}/users/me`, {
             method: 'PATCH',
             headers: {
                 authorization: this._token,
@@ -86,7 +86,7 @@ class Api{
 
     // удаление карточек
     removeCard(cardId) {
-        return fetch(`${this._url}/cards/${cardId}`, {
+        return fetch(`${this._baseUrl}/cards/${cardId}`, {
             method: 'DELETE',
             headers: {
                 authorization: this._token,
@@ -97,10 +97,10 @@ class Api{
             
     }
 
-    // запрос на лайки карточек
-    likeCard(cardId) {
+    // запрос поставить и удалить лайк с карточки
+    changeLikeCardStatus(cardId, likeStatus) {
         return fetch(`${this._baseUrl}/cards/likes/${cardId}`, {
-            method: 'PUT',
+            method: (likeStatus ? 'PUT' : 'DELETE'),
             headers: {
                 authorization: this._token,
                 'Content-Type': 'application/json'
@@ -110,17 +110,6 @@ class Api{
             
     }
 
-    // удаление лайка с карточек
-    removeLikeCard(cardId) {
-        return fetch(`${this._baseUrl}/cards/likes/${cardId}`, {
-            method: 'DELETE',
-            headers: {
-                authorization: this._token,
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(this.onError)
-    }
 
 }
 
